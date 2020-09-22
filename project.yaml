@@ -1,0 +1,816 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: moodle
+      openshift.io/deployment.name: moodle-1
+      openshift.io/generated-by: OpenShiftWebConsole
+      openshift.io/scc: anyuid
+    creationTimestamp: "2020-08-12T08:53:11Z"
+    generateName: moodle-1-
+    labels:
+      app: moodle
+      deployment: moodle-1
+      deploymentconfig: moodle
+    name: moodle-1-gj2r9
+    namespace: sagar
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicationController
+      name: moodle-1
+      uid: 3e04b319-dc79-11ea-a97e-0242ac11001f
+    resourceVersion: "11248"
+    selfLink: /api/v1/namespaces/sagar/pods/moodle-1-gj2r9
+    uid: 3ffb0722-dc79-11ea-a97e-0242ac11001f
+  spec:
+    containers:
+    - image: docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590
+      imagePullPolicy: IfNotPresent
+      name: moodle
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      resources: {}
+      securityContext:
+        capabilities:
+          drop:
+          - MKNOD
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /opt/app-root/moodledata
+        name: moodle-1
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-hlqfx
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: default-dockercfg-jzwc5
+    nodeName: master
+    nodeSelector:
+      node-role.kubernetes.io/compute: "true"
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seLinuxOptions:
+        level: s0:c16,c10
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    volumes:
+    - emptyDir: {}
+      name: moodle-1
+    - name: default-token-hlqfx
+      secret:
+        defaultMode: 420
+        secretName: default-token-hlqfx
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2020-08-12T08:53:11Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2020-08-12T08:54:06Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: null
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2020-08-12T08:53:11Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://228c966c1b600e1462be00eb6ff8281df603293c8e4cb53c607ae89f1eb85d08
+      image: docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590
+      imageID: docker-pullable://docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590
+      lastState: {}
+      name: moodle
+      ready: true
+      restartCount: 0
+      state:
+        running:
+          startedAt: "2020-08-12T08:54:06Z"
+    hostIP: 172.17.0.31
+    phase: Running
+    podIP: 10.128.0.30
+    qosClass: BestEffort
+    startTime: "2020-08-12T08:53:11Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mysql
+      openshift.io/deployment.name: mysql-1
+      openshift.io/scc: anyuid
+    creationTimestamp: "2020-08-12T08:51:48Z"
+    generateName: mysql-1-
+    labels:
+      deployment: mysql-1
+      deploymentconfig: mysql
+      name: mysql
+    name: mysql-1-f8xhz
+    namespace: sagar
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicationController
+      name: mysql-1
+      uid: 0c964b5a-dc79-11ea-a97e-0242ac11001f
+    resourceVersion: "10987"
+    selfLink: /api/v1/namespaces/sagar/pods/mysql-1-f8xhz
+    uid: 0ecef0d9-dc79-11ea-a97e-0242ac11001f
+  spec:
+    containers:
+    - env:
+      - name: MYSQL_USER
+        valueFrom:
+          secretKeyRef:
+            key: database-user
+            name: mysql
+      - name: MYSQL_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: database-password
+            name: mysql
+      - name: MYSQL_ROOT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: database-root-password
+            name: mysql
+      - name: MYSQL_DATABASE
+        valueFrom:
+          secretKeyRef:
+            key: database-name
+            name: mysql
+      image: docker-registry.default.svc:5000/openshift/mysql@sha256:e08ee4d43b7356607685b69bde6335e27cf20c020f345b6c6c59400183882764
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        successThreshold: 1
+        tcpSocket:
+          port: 3306
+        timeoutSeconds: 1
+      name: mysql
+      ports:
+      - containerPort: 3306
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - /bin/sh
+          - -i
+          - -c
+          - MYSQL_PWD="$MYSQL_PASSWORD" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE
+            -e 'SELECT 1'
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        limits:
+          memory: 512Mi
+        requests:
+          memory: 512Mi
+      securityContext:
+        capabilities:
+          drop:
+          - MKNOD
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/lib/mysql/data
+        name: mysql-data
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-hlqfx
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: default-dockercfg-jzwc5
+    nodeName: master
+    nodeSelector:
+      node-role.kubernetes.io/compute: "true"
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seLinuxOptions:
+        level: s0:c16,c10
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: mysql-data
+      persistentVolumeClaim:
+        claimName: mysql
+    - name: default-token-hlqfx
+      secret:
+        defaultMode: 420
+        secretName: default-token-hlqfx
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2020-08-12T08:51:48Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2020-08-12T08:52:13Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: null
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2020-08-12T08:51:48Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://a2ebba5fd6d932212b8fe6df25e0cf2aab88efc5d3daa31d01054bd0ca36180a
+      image: docker-registry.default.svc:5000/openshift/mysql@sha256:e08ee4d43b7356607685b69bde6335e27cf20c020f345b6c6c59400183882764
+      imageID: docker-pullable://docker-registry.default.svc:5000/openshift/mysql@sha256:e08ee4d43b7356607685b69bde6335e27cf20c020f345b6c6c59400183882764
+      lastState: {}
+      name: mysql
+      ready: true
+      restartCount: 0
+      state:
+        running:
+          startedAt: "2020-08-12T08:52:03Z"
+    hostIP: 172.17.0.31
+    phase: Running
+    podIP: 10.128.0.28
+    qosClass: Burstable
+    startTime: "2020-08-12T08:51:48Z"
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.completed-at: 2020-08-12 08:54:06 +0000 UTC
+      openshift.io/deployer-pod.created-at: 2020-08-12 08:53:07 +0000 UTC
+      openshift.io/deployer-pod.name: moodle-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: moodle
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: config change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"apps.openshift.io/v1","metadata":{"name":"moodle","namespace":"sagar","selfLink":"/apis/apps.openshift.io/v1/namespaces/sagar/deploymentconfigs/moodle","uid":"3d8a2fd9-dc79-11ea-a97e-0242ac11001f","resourceVersion":"11112","generation":2,"creationTimestamp":"2020-08-12T08:53:06Z","labels":{"app":"moodle"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"strategy":{"type":"Rolling","rollingParams":{"updatePeriodSeconds":1,"intervalSeconds":1,"timeoutSeconds":600,"maxUnavailable":"25%","maxSurge":"25%"},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ConfigChange"},{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["moodle"],"from":{"kind":"ImageStreamTag","namespace":"sagar","name":"moodle:3.3.2"},"lastTriggeredImage":"docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590"}}],"replicas":1,"test":false,"selector":{"app":"moodle","deploymentconfig":"moodle"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"moodle","deploymentconfig":"moodle"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"volumes":[{"name":"moodle-1","emptyDir":{}}],"containers":[{"name":"moodle","image":"docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590","ports":[{"containerPort":8080,"protocol":"TCP"}],"resources":{},"volumeMounts":[{"name":"moodle-1","mountPath":"/opt/app-root/moodledata"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}}},"status":{"latestVersion":1,"observedGeneration":1,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"config change","causes":[{"type":"ConfigChange"}]},"conditions":[{"type":"Available","status":"False","lastUpdateTime":"2020-08-12T08:53:07Z","lastTransitionTime":"2020-08-12T08:53:07Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: "2020-08-12T08:53:07Z"
+    generation: 2
+    labels:
+      app: moodle
+      openshift.io/deployment-config.name: moodle
+    name: moodle-1
+    namespace: sagar
+    ownerReferences:
+    - apiVersion: apps.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DeploymentConfig
+      name: moodle
+      uid: 3d8a2fd9-dc79-11ea-a97e-0242ac11001f
+    resourceVersion: "11255"
+    selfLink: /api/v1/namespaces/sagar/replicationcontrollers/moodle-1
+    uid: 3e04b319-dc79-11ea-a97e-0242ac11001f
+  spec:
+    replicas: 1
+    selector:
+      app: moodle
+      deployment: moodle-1
+      deploymentconfig: moodle
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: moodle
+          openshift.io/deployment.name: moodle-1
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: moodle
+          deployment: moodle-1
+          deploymentconfig: moodle
+      spec:
+        containers:
+        - image: docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590
+          imagePullPolicy: IfNotPresent
+          name: moodle
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /opt/app-root/moodledata
+            name: moodle-1
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: moodle-1
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 2
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.completed-at: 2020-08-12 08:52:13 +0000 UTC
+      openshift.io/deployer-pod.created-at: 2020-08-12 08:51:44 +0000 UTC
+      openshift.io/deployer-pod.name: mysql-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mysql
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: config change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"apps.openshift.io/v1","metadata":{"name":"mysql","namespace":"sagar","selfLink":"/apis/apps.openshift.io/v1/namespaces/sagar/deploymentconfigs/mysql","uid":"0c8b7c3c-dc79-11ea-a97e-0242ac11001f","resourceVersion":"10903","generation":2,"creationTimestamp":"2020-08-12T08:51:44Z","labels":{"template":"mysql-persistent-template","template.openshift.io/template-instance-owner":"0c8253bd-dc79-11ea-a97e-0242ac11001f"},"annotations":{"template.alpha.openshift.io/wait-for-ready":"true"}},"spec":{"strategy":{"type":"Recreate","recreateParams":{"timeoutSeconds":600},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["mysql"],"from":{"kind":"ImageStreamTag","namespace":"openshift","name":"mysql:5.7"},"lastTriggeredImage":"docker-registry.default.svc:5000/openshift/mysql@sha256:e08ee4d43b7356607685b69bde6335e27cf20c020f345b6c6c59400183882764"}},{"type":"ConfigChange"}],"replicas":1,"revisionHistoryLimit":10,"test":false,"selector":{"name":"mysql"},"template":{"metadata":{"creationTimestamp":null,"labels":{"name":"mysql"}},"spec":{"volumes":[{"name":"mysql-data","persistentVolumeClaim":{"claimName":"mysql"}}],"containers":[{"name":"mysql","image":"docker-registry.default.svc:5000/openshift/mysql@sha256:e08ee4d43b7356607685b69bde6335e27cf20c020f345b6c6c59400183882764","ports":[{"containerPort":3306,"protocol":"TCP"}],"env":[{"name":"MYSQL_USER","valueFrom":{"secretKeyRef":{"name":"mysql","key":"database-user"}}},{"name":"MYSQL_PASSWORD","valueFrom":{"secretKeyRef":{"name":"mysql","key":"database-password"}}},{"name":"MYSQL_ROOT_PASSWORD","valueFrom":{"secretKeyRef":{"name":"mysql","key":"database-root-password"}}},{"name":"MYSQL_DATABASE","valueFrom":{"secretKeyRef":{"name":"mysql","key":"database-name"}}}],"resources":{"limits":{"memory":"512Mi"}},"volumeMounts":[{"name":"mysql-data","mountPath":"/var/lib/mysql/data"}],"livenessProbe":{"tcpSocket":{"port":3306},"initialDelaySeconds":30,"timeoutSeconds":1,"periodSeconds":10,"successThreshold":1,"failureThreshold":3},"readinessProbe":{"exec":{"command":["/bin/sh","-i","-c","MYSQL_PWD=\"$MYSQL_PASSWORD\" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE -e 'SELECT 1'"]},"initialDelaySeconds":5,"timeoutSeconds":1,"periodSeconds":10,"successThreshold":1,"failureThreshold":3},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}}},"status":{"latestVersion":1,"observedGeneration":0,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"config change","causes":[{"type":"ConfigChange"}]}}}
+    creationTimestamp: "2020-08-12T08:51:44Z"
+    generation: 2
+    labels:
+      openshift.io/deployment-config.name: mysql
+      template: mysql-persistent-template
+      template.openshift.io/template-instance-owner: 0c8253bd-dc79-11ea-a97e-0242ac11001f
+    name: mysql-1
+    namespace: sagar
+    ownerReferences:
+    - apiVersion: apps.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DeploymentConfig
+      name: mysql
+      uid: 0c8b7c3c-dc79-11ea-a97e-0242ac11001f
+    resourceVersion: "10994"
+    selfLink: /api/v1/namespaces/sagar/replicationcontrollers/mysql-1
+    uid: 0c964b5a-dc79-11ea-a97e-0242ac11001f
+  spec:
+    replicas: 1
+    selector:
+      deployment: mysql-1
+      deploymentconfig: mysql
+      name: mysql
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: mysql
+          openshift.io/deployment.name: mysql-1
+        creationTimestamp: null
+        labels:
+          deployment: mysql-1
+          deploymentconfig: mysql
+          name: mysql
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: mysql
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: mysql
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-root-password
+                name: mysql
+          - name: MYSQL_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database-name
+                name: mysql
+          image: docker-registry.default.svc:5000/openshift/mysql@sha256:e08ee4d43b7356607685b69bde6335e27cf20c020f345b6c6c59400183882764
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 3306
+            timeoutSeconds: 1
+          name: mysql
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - MYSQL_PWD="$MYSQL_PASSWORD" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE
+                -e 'SELECT 1'
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mysql/data
+            name: mysql-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: mysql
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 2
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: "2020-08-12T08:53:06Z"
+    labels:
+      app: moodle
+    name: moodle
+    namespace: sagar
+    resourceVersion: "11105"
+    selfLink: /api/v1/namespaces/sagar/services/moodle
+    uid: 3d8a94cb-dc79-11ea-a97e-0242ac11001f
+  spec:
+    clusterIP: 172.30.124.182
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: moodle
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      template.openshift.io/expose-uri: mysql://{.spec.clusterIP}:{.spec.ports[?(.name=="mysql")].port}
+    creationTimestamp: "2020-08-12T08:51:44Z"
+    labels:
+      template: mysql-persistent-template
+      template.openshift.io/template-instance-owner: 0c8253bd-dc79-11ea-a97e-0242ac11001f
+    name: mysql
+    namespace: sagar
+    resourceVersion: "10893"
+    selfLink: /api/v1/namespaces/sagar/services/mysql
+    uid: 0c89581d-dc79-11ea-a97e-0242ac11001f
+  spec:
+    clusterIP: 172.30.107.196
+    ports:
+    - name: mysql
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+    selector:
+      name: mysql
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: "2020-08-12T08:53:06Z"
+    generation: 2
+    labels:
+      app: moodle
+    name: moodle
+    namespace: sagar
+    resourceVersion: "11256"
+    selfLink: /apis/apps.openshift.io/v1/namespaces/sagar/deploymentconfigs/moodle
+    uid: 3d8a2fd9-dc79-11ea-a97e-0242ac11001f
+  spec:
+    replicas: 1
+    selector:
+      app: moodle
+      deploymentconfig: moodle
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: moodle
+          deploymentconfig: moodle
+      spec:
+        containers:
+        - image: docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590
+          imagePullPolicy: IfNotPresent
+          name: moodle
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /opt/app-root/moodledata
+            name: moodle-1
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: moodle-1
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - moodle
+        from:
+          kind: ImageStreamTag
+          name: moodle:3.3.2
+          namespace: sagar
+        lastTriggeredImage: docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590
+      type: ImageChange
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2020-08-12T08:54:06Z"
+      lastUpdateTime: "2020-08-12T08:54:06Z"
+      message: Deployment config has minimum availability.
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2020-08-12T08:54:07Z"
+      lastUpdateTime: "2020-08-12T08:54:07Z"
+      message: replication controller "moodle-1" successfully rolled out
+      reason: NewReplicationControllerAvailable
+      status: "True"
+      type: Progressing
+    details:
+      causes:
+      - type: ConfigChange
+      message: config change
+    latestVersion: 1
+    observedGeneration: 2
+    readyReplicas: 1
+    replicas: 1
+    unavailableReplicas: 0
+    updatedReplicas: 1
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: "true"
+    creationTimestamp: "2020-08-12T08:51:44Z"
+    generation: 2
+    labels:
+      template: mysql-persistent-template
+      template.openshift.io/template-instance-owner: 0c8253bd-dc79-11ea-a97e-0242ac11001f
+    name: mysql
+    namespace: sagar
+    resourceVersion: "10996"
+    selfLink: /apis/apps.openshift.io/v1/namespaces/sagar/deploymentconfigs/mysql
+    uid: 0c8b7c3c-dc79-11ea-a97e-0242ac11001f
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      name: mysql
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: mysql
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: mysql
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: mysql
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-root-password
+                name: mysql
+          - name: MYSQL_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database-name
+                name: mysql
+          image: docker-registry.default.svc:5000/openshift/mysql@sha256:e08ee4d43b7356607685b69bde6335e27cf20c020f345b6c6c59400183882764
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 3306
+            timeoutSeconds: 1
+          name: mysql
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - MYSQL_PWD="$MYSQL_PASSWORD" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE
+                -e 'SELECT 1'
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mysql/data
+            name: mysql-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: mysql
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mysql
+        from:
+          kind: ImageStreamTag
+          name: mysql:5.7
+          namespace: openshift
+        lastTriggeredImage: docker-registry.default.svc:5000/openshift/mysql@sha256:e08ee4d43b7356607685b69bde6335e27cf20c020f345b6c6c59400183882764
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2020-08-12T08:52:13Z"
+      lastUpdateTime: "2020-08-12T08:52:13Z"
+      message: Deployment config has minimum availability.
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2020-08-12T08:51:48Z"
+      lastUpdateTime: "2020-08-12T08:52:14Z"
+      message: replication controller "mysql-1" successfully rolled out
+      reason: NewReplicationControllerAvailable
+      status: "True"
+      type: Progressing
+    details:
+      causes:
+      - type: ConfigChange
+      message: config change
+    latestVersion: 1
+    observedGeneration: 2
+    readyReplicas: 1
+    replicas: 1
+    unavailableReplicas: 0
+    updatedReplicas: 1
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/image.dockerRepositoryCheck: "2020-08-12T08:53:07Z"
+    creationTimestamp: "2020-08-12T08:53:06Z"
+    generation: 2
+    labels:
+      app: moodle
+    name: moodle
+    namespace: sagar
+    resourceVersion: "11110"
+    selfLink: /apis/image.openshift.io/v1/namespaces/sagar/imagestreams/moodle
+    uid: 3d862d17-dc79-11ea-a97e-0242ac11001f
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+        openshift.io/imported-from: docker.io/michaellang/moodle:3.3.2
+      from:
+        kind: DockerImage
+        name: docker.io/michaellang/moodle:3.3.2
+      generation: 2
+      importPolicy: {}
+      name: 3.3.2
+      referencePolicy:
+        type: Source
+  status:
+    dockerImageRepository: docker-registry.default.svc:5000/sagar/moodle
+    tags:
+    - items:
+      - created: "2020-08-12T08:53:07Z"
+        dockerImageReference: docker.io/michaellang/moodle@sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590
+        generation: 2
+        image: sha256:2fbc08b3fae50f4951f8f88e31d9d358ebf3a4b9f93b4f1016319025f186b590
+      tag: 3.3.2
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: "2020-08-12T08:56:31Z"
+    labels:
+      app: moodle
+    name: moodle
+    namespace: sagar
+    resourceVersion: "11546"
+    selfLink: /apis/route.openshift.io/v1/namespaces/sagar/routes/moodle
+    uid: b73a7251-dc79-11ea-a97e-0242ac11001f
+  spec:
+    host: moodle-sagar.2886795295-80-cykoria05.environments.katacoda.com
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: moodle
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2020-08-12T08:56:31Z"
+        status: "True"
+        type: Admitted
+      host: moodle-sagar.2886795295-80-cykoria05.environments.katacoda.com
+      routerName: router
+      wildcardPolicy: None
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
